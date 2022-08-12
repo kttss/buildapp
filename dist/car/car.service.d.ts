@@ -1,0 +1,31 @@
+import { JwtService } from '@nestjs/jwt';
+import { Repository } from 'typeorm';
+import { AgencyService } from '../agency/agency.service';
+import { Agency } from '../agency/entities/agency.entity';
+import { LoggerService } from '../logger/logger.service';
+import { CreateCarDto } from './dto/create-car.dto';
+import { UpdateCarDto } from './dto/update-car.dto';
+import { Car } from './entities/car.entity';
+import { Document } from './entities/document.entity';
+import { File } from './entities/file.entity';
+import { CarStatutEnum } from './enums/car-statut.enum';
+export declare class CarService {
+    private carRepository;
+    private agenceRepository;
+    private documentRepository;
+    private fileRepository;
+    private agenceService;
+    private readonly loggerService;
+    private jwt;
+    constructor(carRepository: Repository<Car>, agenceRepository: Repository<Agency>, documentRepository: Repository<Document>, fileRepository: Repository<File>, agenceService: AgencyService, loggerService: LoggerService, jwt: JwtService);
+    create(createCarDto: CreateCarDto, token?: string): Promise<number>;
+    findAll(token: string): Promise<Car[]>;
+    findAllByAdmin(id: number): Promise<Car[]>;
+    findOne(id: number): Promise<Car>;
+    update(id: number, updateCarDto: UpdateCarDto, token: string): Promise<number>;
+    remove(id: number, token: string): Promise<import("typeorm").DeleteResult>;
+    loadMockData(): void;
+    saveDocument(car: Car, date: Date, files: any, document?: any): Promise<any>;
+    getTotalCarsByStatut(statut: CarStatutEnum, agencesIds?: any[]): Promise<number>;
+    getTop(agencesIds?: any[]): Promise<any[]>;
+}
