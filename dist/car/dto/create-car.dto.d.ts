@@ -17,4 +17,5 @@ export declare class CreateCarDto {
     vignetteDateExpertation: Date;
     visiteImages: string[];
     visiteeDateExpertation: Date;
+    dateVidange: string;
 }

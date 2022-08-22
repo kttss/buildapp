@@ -9,6 +9,7 @@ export declare class Car {
     carburant: string;
     statut: string;
     description: string;
+    dateVidange: string;
     carteGrise: Document;
     autorisationCirculation: Document;
     assurance: Document;

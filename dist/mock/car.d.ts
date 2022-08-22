@@ -7,6 +7,7 @@ export declare const CARS: {
     carburant: carburantEnum;
     statut: CarStatutEnum;
     description: string;
+    dateVidange: string;
     carteGriseImages: string[];
     carteGriseDateExpertation: Date;
     autorisationCirculationImages: string[];

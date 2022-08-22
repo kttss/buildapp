@@ -11,6 +11,7 @@ exports.CARS = [
         carburant: carburant_enum_1.carburantEnum.Diesel,
         statut: car_statut_enum_1.CarStatutEnum.Disponible,
         description: '',
+        dateVidange: new Date('2012-03-04') + '',
         carteGriseImages: [
             'https://static.yabiladi.com/files/articles/38456_54514b2b98e5a4496b3ade499426db74_565.JPG',
         ],
@@ -40,6 +41,7 @@ exports.CARS = [
         carburant: carburant_enum_1.carburantEnum.Diesel,
         statut: car_statut_enum_1.CarStatutEnum.Disponible,
         description: 'test',
+        dateVidange: new Date('2012-03-04') + '',
         carteGriseImages: [
             'https://static.yabiladi.com/files/articles/38456_54514b2b98e5a4496b3ade499426db74_565.JPG',
         ],
@@ -69,6 +71,7 @@ exports.CARS = [
         carburant: carburant_enum_1.carburantEnum.Diesel,
         statut: car_statut_enum_1.CarStatutEnum.Disponible,
         description: '',
+        dateVidange: new Date('2012-03-04') + '',
         carteGriseImages: [
             'https://static.yabiladi.com/files/articles/38456_54514b2b98e5a4496b3ade499426db74_565.JPG',
         ],
@@ -98,6 +101,7 @@ exports.CARS = [
         carburant: carburant_enum_1.carburantEnum.Diesel,
         statut: car_statut_enum_1.CarStatutEnum.Disponible,
         description: '',
+        dateVidange: new Date('2012-03-04') + '',
         carteGriseImages: [
             'https://static.yabiladi.com/files/articles/38456_54514b2b98e5a4496b3ade499426db74_565.JPG',
         ],
@@ -127,6 +131,7 @@ exports.CARS = [
         carburant: carburant_enum_1.carburantEnum.Diesel,
         statut: car_statut_enum_1.CarStatutEnum.Disponible,
         description: '',
+        dateVidange: new Date('2012-03-04') + '',
         carteGriseImages: [
             'https://static.yabiladi.com/files/articles/38456_54514b2b98e5a4496b3ade499426db74_565.JPG',
         ],

@@ -36,7 +36,7 @@ let CarService = class CarService {
         this.jwt = jwt;
     }
     async create(createCarDto, token) {
-        const { agence, marque, model, matricule, carburant, statut, description, carteGriseImages, carteGriseDateExpertation, autorisationCirculationImages, autorisationCirculationDateExpertation, assuranceImages, assuranceDateExpertation, vignetteImages, vignetteDateExpertation, visiteImages, visiteeDateExpertation, } = createCarDto;
+        const { agence, marque, model, matricule, carburant, statut, description, carteGriseImages, carteGriseDateExpertation, autorisationCirculationImages, autorisationCirculationDateExpertation, assuranceImages, assuranceDateExpertation, vignetteImages, vignetteDateExpertation, visiteImages, visiteeDateExpertation, dateVidange, } = createCarDto;
         const car = new car_entity_1.Car();
         const ageneceEnti = await this.agenceService.findOne(agence);
         car.agence = ageneceEnti;
@@ -46,17 +46,20 @@ let CarService = class CarService {
         car.matricule = matricule;
         car.model = model;
         car.statut = statut;
+        car.dateVidange = dateVidange;
         await this.carRepository.save(car);
         const carteGrise = this.saveDocument(car, carteGriseDateExpertation, carteGriseImages);
         const autorisationCirculation = this.saveDocument(car, autorisationCirculationDateExpertation, autorisationCirculationImages);
         const assurance = this.saveDocument(car, assuranceDateExpertation, assuranceImages);
         const vignette = this.saveDocument(car, vignetteDateExpertation, vignetteImages);
-        const visite = this.saveDocument(car, visiteeDateExpertation, visiteImages);
         car.carteGrise = await carteGrise;
         car.autorisationCirculation = await autorisationCirculation;
         car.assurance = await assurance;
         car.vignette = await vignette;
-        car.visite = await visite;
+        if (visiteeDateExpertation || (visiteImages && visiteImages.length)) {
+            const visite = this.saveDocument(car, visiteeDateExpertation, visiteImages);
+            car.visite = await visite;
+        }
         const res = await this.carRepository.save(car);
         ageneceEnti.cars.push(car);
         await this.agenceRepository.save(ageneceEnti);
@@ -71,7 +74,11 @@ let CarService = class CarService {
         if (jwtDecoded.role === role_enum_1.RoleEnum.Admin) {
             return this.carRepository
                 .createQueryBuilder('car')
-                .leftJoinAndSelect('car.carteGrise', 'cart')
+                .leftJoinAndSelect('car.carteGrise', 'carteGrise')
+                .leftJoinAndSelect('car.autorisationCirculation', 'autorisationCirculation')
+                .leftJoinAndSelect('car.assurance', 'assurance')
+                .leftJoinAndSelect('car.vignette', 'vignette')
+                .leftJoinAndSelect('car.visite', 'visite')
                 .getMany();
         }
         else {
@@ -101,7 +108,7 @@ let CarService = class CarService {
             .getOne();
     }
     async update(id, updateCarDto, token) {
-        const { marque, model, matricule, carburant, statut, description, carteGriseImages, carteGriseDateExpertation, autorisationCirculationImages, autorisationCirculationDateExpertation, assuranceImages, assuranceDateExpertation, vignetteImages, vignetteDateExpertation, visiteImages, visiteeDateExpertation, agence, } = updateCarDto;
+        const { marque, model, matricule, carburant, statut, description, carteGriseImages, carteGriseDateExpertation, autorisationCirculationImages, autorisationCirculationDateExpertation, assuranceImages, assuranceDateExpertation, vignetteImages, vignetteDateExpertation, visiteImages, visiteeDateExpertation, agence, dateVidange, } = updateCarDto;
         const car = await this.findOne(id);
         if (!car) {
             throw new common_1.NotFoundException('car is not found');
@@ -114,6 +121,7 @@ let CarService = class CarService {
         car.model = model;
         car.statut = statut;
         car.agence = ageneceEnti;
+        car.dateVidange = dateVidange;
         const carteGriseDoc = await this.documentRepository.findOne({
             where: [{ id: car.carteGrise.id }],
         });
@@ -126,28 +134,39 @@ let CarService = class CarService {
         const vignetteDoc = await this.documentRepository.findOne({
             where: [{ id: car.vignette.id }],
         });
-        const visiteDoc = await this.documentRepository.findOne({
-            where: [{ id: car.visite.id }],
-        });
+        const idss = [
+            carteGriseDoc.id,
+            autorisationCirculationDoc.id,
+            assuranceDoc.id,
+            vignetteDoc.id,
+        ];
+        let visiteDoc;
+        if (car.visite) {
+            visiteDoc = await this.documentRepository.findOne({
+                where: [{ id: car.visite.id }],
+            });
+            idss.push(visiteDoc.id);
+        }
         this.fileRepository
             .createQueryBuilder()
             .delete()
             .from(file_entity_1.File)
             .where('file.documentId IN (:id)', {
-            id: [
-                carteGriseDoc.id,
-                autorisationCirculationDoc.id,
-                assuranceDoc.id,
-                vignetteDoc.id,
-                visiteDoc.id,
-            ],
+            id: [...idss],
         })
             .execute();
         const carteGrise = this.saveDocument(car, carteGriseDateExpertation, carteGriseImages, carteGriseDoc);
         const autorisationCirculation = this.saveDocument(car, autorisationCirculationDateExpertation, autorisationCirculationImages, autorisationCirculationDoc);
         const assurance = this.saveDocument(car, assuranceDateExpertation, assuranceImages, assuranceDoc);
         const vignette = this.saveDocument(car, vignetteDateExpertation, vignetteImages, vignetteDoc);
-        const visite = this.saveDocument(car, visiteeDateExpertation, visiteImages, visiteDoc);
+        if (visiteDoc) {
+            const visite = this.saveDocument(car, visiteeDateExpertation, visiteImages, visiteDoc);
+        }
+        else if (visiteeDateExpertation ||
+            (visiteImages && visiteImages.length)) {
+            const visite = this.saveDocument(car, visiteeDateExpertation, visiteImages);
+            car.visite = await visite;
+        }
         const res = await this.carRepository.save(car);
         ageneceEnti.cars.push(car);
         await this.agenceRepository.save(ageneceEnti);

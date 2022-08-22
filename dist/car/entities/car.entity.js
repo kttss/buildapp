@@ -54,6 +54,12 @@ __decorate([
     __metadata("design:type", String)
 ], Car.prototype, "description", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], Car.prototype, "dateVidange", void 0);
+__decorate([
     (0, typeorm_1.OneToOne)(() => document_entity_1.Document, { onDelete: 'CASCADE', onUpdate: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", document_entity_1.Document)
